@@ -1,1 +1,61 @@
-Please replace this text with ~50 lines of terminal history.
+Read/Query
+1. Do a query to see all the bounties
+db.bounties.find()
+2. Do a query to find the bounty whose client is Time Bureau
+db.bounties.find({ client: "Time Bureau" })
+3. Do a query to find the bounties who have been captured
+db.bounties.find({ captured: true })
+4. Do a query specific to the bounty you inserted
+db.bounties.find({name: 'Han Solo'})
+5. Do a query to just return the names of all the bounties
+db.bounties.find({}, {name: true, _id: false})
+---
+
+Remove
+1. Starbuck and the Captain have come to an understanding. Remove her record
+db.bounties.remove({name: "Starbuck"})
+2.find and remove the duplicate record - be sure to JUST remove the one copy
+db.bounties.remove({name: "Han Solo"}, {justOne: 1})
+---
+Update
+1. Update Sara Lance's name to be her superhero alias 'White Canary'
+db.bounties.update({name: "Sara Lance"}, {$set: {name: "White Canary"}})
+2. Update Rocket's ship to be The Milano 2
+db.bounties.update({name: "Rocket"}, {$set: {ship: "The Milano 2"}})
+---
+Intermediate Mongo
+Check out the Intermediate Mongo lecture notes in the instructor notes directory. 
+Follow through each of the explanations. 
+Follow the commands and perform appropriate finds after each update call to see the results
+
+1. Find the bounties that are greater than 100000
+db.bounties.find({reward: {$gt: 100000}})
+2. Find the bounties that are less than 1000
+db.bounties.find({reward: {$lt: 1000}})
+3. Find the bounties that are less than or equal to 1000
+db.bounties.find({reward: {$lte: 1000}})
+4. Find the bounty with the hunter Nebula
+db.bounties.find({hunters: "Nebula"})
+5. Find the bounty with the ship Waverider OR Serenity
+db.bounties.find({$or: [{ship: "Waverider"}, {ship: "Serenity"}]}).pretty()
+6. Find the bounty who is not captured AND has whose client is Ayesha High Priestess of the Sovereign
+db.bounties.find({$and: [{captured: false}, {client: "Ayesha High Priestess of the Sovereign"}]}).pretty()
+7. Increase all the bounties by 333333
+db.bounties.update({}, {$inc: {reward: +333333}}, {multi: true})
+8. Multiply all the bounties by 2
+db.bounties.update({}, {$mul: {reward: 2}}, {multi: true})
+9. Add Bobba Fett as a hunter for Malcolm Reynolds
+db.bounties.update({name: "Malcolm Reynolds"}, {$push: {hunters: "Bobba Fett"}})
+10. Add Bobba Fett as a hunter for the one that has the ship Waverider
+db.bounties.update({ship: "Waverider"}, {$push: {hunters: "Bobba Fett"}})
+11. Find and remove Dengar the bounty hunter
+db.bounties.find({hunters: "Dengar"})
+db.bounties.update({}, {$pull: {hunters: "Dengar"}}, {multi: true})
+---
+Upsert is used with update method which creates a new document 
+if the query does not retrieve any documents matching the query parameters.
+
+1. Try giving a lastSeen field to Han Solo, with the property yesterday (we haven't set his yet)
+db.bounties.update({name: "Han Solo"}, {$set: {lastSeen: "yesterday"}}, {upsert: true})
+2. Try giving all bounties that are not Han Solo a new field of lastSeen - with a value of last week
+db.bounties.update({name: {$ne: "Han Solo"}}, {$set: {lastSeen: "last week"}}, {multi:true})
